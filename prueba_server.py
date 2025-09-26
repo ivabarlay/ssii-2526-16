@@ -9,7 +9,7 @@ while True: #bucle infinito donde el server va aceptando peticiones
     print ("Nueva conexión establecida")
     print (addr)
 
-    conexion.send("Oal benbenio al servidoh, introduzca su usuario y contraseña".encode())
+    c#onexion.send("Oal benbenio al servidoh, introduzca su usuario y contraseña".encode())
     peticion = conexion.recv(1024).decode() #recibe todo lo que envia el cliente
     if not peticion:
         break

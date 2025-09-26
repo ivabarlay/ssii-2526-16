@@ -1,5 +1,8 @@
 import socket 
 
+mi_socket = socket.socket()
+mi_socket.connect(('localhost',8000))
+
 print("Oal benbenio al servidoh, introduzca su usuario y contraseña")
 
 user = input("Usuario: ")
@@ -9,9 +12,6 @@ print("Introduzca los siguientes datos para realizar la transferencia")
 co = input("Cuenta Origen: ")
 cd = input("Cuenta Destino: ")
 ct = input("Cantidad Transferida: ")
-
-mi_socket = socket.socket()
-mi_socket.connect(('localhost',8000))
 
 respuesta = mi_socket.recv(1024).decode() 
 mensaje = f"{user},{passw}"
