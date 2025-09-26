@@ -2,7 +2,7 @@ import socket
 
 mi_socket = socket.socket()
 mi_socket.bind(('localhost',8000))
-mi_socket.listen(5)
+mi_socket.listen()
 
 while True: #bucle infinito donde el server va aceptando peticiones
     conexion,addr = mi_socket.accept()
