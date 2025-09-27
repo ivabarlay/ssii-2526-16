@@ -13,12 +13,14 @@ conn = psycopg2.connect(database = "postgres",
 cur = conn.cursor()
 cur.execute('SELECT * FROM users;')
 cur.fetchall()
-cur.execute("INSERT INTO users (username,password) VALUES ('a','B');")
+
 
 print("Oal benbenio al servidoh, introduzca su usuario y contraseña")
 
 user = input('Usuario: ')
 passw = input('Contraseña: ')
+cur.execute("INSERT INTO users (username,password) VALUES (%s,%s);",(user,passw)) #añade user a la base de datos (si no está)
+conn.commit()
 
 print("Introduzca los siguientes datos para realizar la transferencia")
 co = input("Cuenta Origen: ")
