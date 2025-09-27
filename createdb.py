@@ -32,7 +32,7 @@ new_cur.execute('CREATE TABLE IF NOT EXISTS users (username varchar (40) PRIMARY
 new_cur.execute('CREATE TABLE IF NOT EXISTS transfers (origin varchar (24) NOT NULL, destination varchar (24) NOT NULL, amount int NOT NULL, PRIMARY KEY (origin,destination) );')
 
 try:
-    new_cur.execute("INSERT INTO users (username,password) VALUES ('Paco','sha-256');") #debe estar vacía evidentemente para hacer los inserts
+    new_cur.execute("INSERT INTO users (username,password) VALUES ('Paco','sha-256');") 
     new_cur.execute("INSERT INTO users (username,password) VALUES ('Antonio','sha-256');")
     new_cur.execute("INSERT INTO users (username,password) VALUES ('José','sha-256');")
     new_cur.execute("INSERT INTO users (username,password) VALUES ('María','sha-256');")
