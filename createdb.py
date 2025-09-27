@@ -1,4 +1,4 @@
-# Creates Data Base with tables and pre-registers (dummy) five users
+# Creates Data Base with tables and pre-registers (dummy) five users.
 
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
