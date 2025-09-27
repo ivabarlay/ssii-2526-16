@@ -19,6 +19,10 @@ print("Oal benbenio al servidoh, introduzca su usuario y contraseña")
 
 user = input('Usuario: ')
 passw = input('Contraseña: ')
+
+cur.execute('SELECT * FROM users;')
+for n in cur.fetchall():
+    print(n[0])
 cur.execute("INSERT INTO users (username,password) VALUES (%s,%s);",(user,passw)) #añade user a la base de datos (si no está)
 conn.commit()
 
@@ -26,6 +30,8 @@ print("Introduzca los siguientes datos para realizar la transferencia")
 co = input("Cuenta Origen: ")
 cd = input("Cuenta Destino: ")
 ct = input("Cantidad Transferida: ")
+cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);",(co,cd,ct)) 
+conn.commit()
 
 respuesta = mi_socket.recv(1024).decode() 
 mensaje = f"{user},{passw}"
