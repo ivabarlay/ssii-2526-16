@@ -1,5 +1,7 @@
 import socket 
 import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from psycopg2 import errors
 
 mi_socket = socket.socket()
 mi_socket.connect(('localhost',8000))
@@ -20,10 +22,14 @@ print("Oal benbenio al servidoh, introduzca su usuario y contraseña")
 user = input('Usuario: ')
 passw = input('Contraseña: ')
 
+#Register
+
 cur.execute('SELECT * FROM users;')
-for n in cur.fetchall():
-    print(n[0])
-#cur.execute("INSERT INTO users (username,password) VALUES (%s,%s);",(user,passw)) #añade user a la base de datos (si no está)
+try:
+    cur.execute("INSERT INTO users (username,password) VALUES ('Paco','sha-256');") 
+except:
+    print("Su nombre de usuario ya existe, ¿Ha olvidado la contraseña?\n")
+    conn.rollback()
 conn.commit()
 
 print("Introduzca los siguientes datos para realizar la transferencia")

@@ -1,5 +1,7 @@
 import socket 
 import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from psycopg2 import errors
 
 conn = psycopg2.connect(database = "postgres", 
                         user = "postgres", 
