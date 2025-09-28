@@ -42,7 +42,9 @@ except:
 
 new_conn.commit()  #confirmar cambios
 new_cur.execute('SELECT * FROM users;')
-#print(cur.fetchall())
+user = 'Paco'
+new_cur.execute(f"SELECT * FROM users WHERE username = '{user}';")
+print(len(new_cur.fetchall()))
 for n in new_cur.fetchall():
     print(n[0])
 

@@ -3,7 +3,7 @@ import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from psycopg2 import errors
 
-conn = psycopg2.connect(database = "postgres", 
+conn = psycopg2.connect(database = "banco_popular", 
                         user = "postgres", 
                         host= 'localhost',
                         password = "example",
@@ -18,8 +18,8 @@ while True: #bucle infinito donde el server va aceptando peticiones
     conexion,addr = mi_socket.accept()
     print ("Nueva conexión establecida")
     print (addr)
-    cur.execute('SELECT * FROM users;')
-    cur.fetchall()
+    #cur.execute('SELECT * FROM users;')
+    #cur.fetchall()
 
     #conexion.send("Oal benbenio al servidoh, introduzca su usuario y contraseña".encode())
     peticion = conexion.recv(1024).decode() #recibe todo lo que envia el cliente
@@ -31,7 +31,7 @@ while True: #bucle infinito donde el server va aceptando peticiones
     if not peticion2:
         break
     co , cd, ct = peticion2.split(",")
-    cur.execute('INSERT INTO users (username,password) VALUES (%s, %s)',(user,passw))
+    #cur.execute('INSERT INTO users (username,password) VALUES (%s, %s)',(user,passw))
     print(user,passw)
     print(co,cd, ct)
 
