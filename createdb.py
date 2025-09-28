@@ -45,3 +45,6 @@ new_cur.execute('SELECT * FROM users;')
 #print(cur.fetchall())
 for n in new_cur.fetchall():
     print(n[0])
+
+new_cur.close()
+new_conn.close()

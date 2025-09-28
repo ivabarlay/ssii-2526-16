@@ -6,7 +6,7 @@ from psycopg2 import errors
 mi_socket = socket.socket()
 mi_socket.connect(('localhost',8000))
 
-conn = psycopg2.connect(database = "postgres", 
+conn = psycopg2.connect(database = "banco_popular", 
                         user = "postgres", 
                         host= 'localhost',
                         password = "example",
@@ -20,16 +20,26 @@ cur.fetchall()
 print("Oal benbenio al servidoh, introduzca su usuario y contraseña")
 
 user = input('Usuario: ')
-passw = input('Contraseña: ')
+
 
 #Register
 
-cur.execute('SELECT * FROM users;')
-try:
-    cur.execute("INSERT INTO users (username,password) VALUES ('Paco','sha-256');") 
-except:
-    print("Su nombre de usuario ya existe, ¿Ha olvidado la contraseña?\n")
-    conn.rollback()
+cur.execute("SELECT * FROM users WHERE username = '%s';",(user))
+if (cur.fetchall()[0] == user):
+    print("Introduzca su contraseña: ")
+    passw = input('Contraseña: ')
+else:
+    print("Usuario no encontrado, registrese")
+    passw = input('Contraseña: ')
+    cur.execute("INSERT INTO users (username,password) VALUES (%s,%s);",(user,passw)) 
+
+
+# try:
+#     cur.execute("INSERT INTO users (username,password) VALUES ('Paco','sha-256');") 
+# except:
+#     print("Su nombre de usuario ya existe, ¿Ha olvidado la contraseña?\n")
+#     conn.rollback()
+
 conn.commit()
 
 print("Introduzca los siguientes datos para realizar la transferencia")
