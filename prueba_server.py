@@ -1,7 +1,6 @@
 import socket 
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from psycopg2 import errors
 
 HOST = ''
 PORT_HOST = 8000
@@ -9,55 +8,44 @@ PORT_HOST = 8000
 # mi_socket = socket.socket()
 # mi_socket.bind(('localhost',8000))
 # mi_socket.listen()
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind((HOST, PORT_HOST))
-    s.listen(1)
-    conn, addr = s.accept()
-    with conn:
-        print('Connected by', addr)
-        
-        # Connect to pg database
-        conn_pg = psycopg2.connect(dbname = "banco_popular",
-                                   user = "postgres",
-                                   password = "example",
-                                   host = "localhost")
+while True:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.bind((HOST, PORT_HOST))
+        s.listen(1)
+        conn, addr = s.accept()
+        with conn:
+            print('Connected by', addr)
+            
+            # Connect to pg database
+            conn_pg = psycopg2.connect(dbname = "banco_popular",
+                                       user = "postgres",
+                                       password = "example",
+                                       host = "localhost")
 
-        # Open cursor to perform ops
-        cur = conn_pg.cursor()
+            # Open cursor to perform ops
+            cur = conn_pg.cursor()
 
-        while True:
             conn.sendall("Bienvenido al sistema en linea para transferencias del Banco Popular, introduzca su usuario y contrasena".encode('utf-8'))
             data = conn.recv(1024).decode()
-            if not data: break
-            try:
-                cur.execute("SELECT * FROM users;")
-                users_data = cur.fetchone()
-            except errors.UndefinedColumn as e:
-                conn.sendall("Nombre de usuario invalido".encode('utf-8'))
-        
-        # Close comms with db
-        cur.close()
-        conn_pg.close()
 
-    # while True: #bucle infinito donde el server va aceptando peticiones
-    #     # conexion,addr = s.accept()
-    #     print ("Nueva conexión establecida")
-    #     print (addr)
-    #     conexion.sendall("Bienvenido al sistema en línea para transferencias del Banco Popular, introduzca su usuario y contraseña".encode('utf-8'))
-    #     #cur.execute('SELECT * FROM users;')
-    #     #cur.fetchall()
-    #
-    #     #conexion.send("Oal benbenio al servidoh, introduzca su usuario y contraseña".encode())
-    #     user = conexion.recv(1024).decode() #recibe todo lo que envia el cliente
-    #     if not user:
-    #         break
-    #
-    #     try:
-    #         cur.execute(f"SELECT * FROM users WHERE username = '{user}';")
-    #         l = cur.fetchall()
-    #     except errors.UndefinedColumn:
-    #         conexion.sendall("Nombre de usuario invalido".encode('utf-8'))
-    #     
+            user_data = None
+            try:
+                cur.execute("SELECT * FROM users WHERE username = (%s);", (data,))
+                user_data = cur.fetchone()
+
+            except psycopg2.errors.UndefinedColumn as e:
+                conn.sendall("Nombre de usuario invalido".encode('utf-8'))
+
+            if user_data is None:
+                conn.sendall("Usuario no encontrado, registrese introduciendo una contraseña\n".encode('utf-8'))
+            else:
+                conn.sendall(f"Usuario encontrado: {user_data}\n".encode('utf-8'))
+            # Close comms with db
+            cur.close()
+            conn_pg.close()
+        s.close()
+
     #     if (len(l) == 0):
     #         conexion.sendall("Usuario no encontrado, registrese introduciendo una contraseña\n".encode('utf-8'))
     #         # passw = input('Contraseña: ')

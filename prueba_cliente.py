@@ -1,13 +1,15 @@
 import socket 
 
-HOST = ''
+HOST = 'localhost'
 PORT_HOST = 8000
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT_HOST))
-    s.sendall(input('Usuario: \n').encode())
-    data = s.recv(1024)
-print('Received', repr(data))
+    s.sendall(input('Input: \n').encode())
+    while True:
+        data = s.recv(1024)
+        if data:
+            print('Received', repr(data))
 
 # mi_socket.connect(('localhost',8000))
 # mi_socket = socket.socket()
