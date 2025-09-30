@@ -59,7 +59,7 @@ while True:
                 cd = conn.recv(1024).decode() 
                 conn.sendall("Cantidad transferida:\n".encode('utf-8'))
                 ct = conn.recv(1024).decode() 
-                cur.execute(f"INSERT INTO transfers (origin,destination,amount) VALUES ({co},{cd},{ct});")
+                cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);", (co, cd, ct))
                 conn.sendall(f"Transfiriendo {ct} desde {co} a {cd}\n".encode('utf-8')) # !
                 conn_pg.commit()
                 #cerramos conexión o damos opción de nuevo a hacer otra transferencia o logout??
