@@ -26,7 +26,7 @@ while True:
             # Open cursor to perform ops
             cur = conn_pg.cursor()
 
-            conn.sendall("Bienvenido al sistema en linea para transferencias del Banco Popular, introduzca su usuario y contrasena".encode('utf-8'))
+            conn.sendall("Bienvenido al sistema en linea para transferencias del Banco Popular, introduzca su usuario y contraseña".encode('utf-8'))
             user_name = conn.recv(1024).decode()
             try:
                 user_data_query = None
@@ -44,12 +44,32 @@ while True:
                 conn_pg.commit()
 
             else:
-                conn.send(f"Usuario encontrado: {user_data_query}\n".encode('utf-8'))
-                conn.sendall("Introduzca su contraseña: ".encode('utf-8'))
+                conn.sendall(f"Usuario encontrado: {user_data_query}\n Introduzca su contraseña: \n".encode('utf-8'))
                 passw = conn.recv(1024).decode()
 
-            conn.send(f"Bienvenido al sistema {user_name}\n".encode('utf-8'))
-            conn.send("Si quiere hacer una transferencia escriba 'trans' y si quiere desloguarse escriba 'exit'\n".encode('utf-8'))
+            conn.sendall(f"Bienvenido al sistema {user_name}\n Si quiere hacer una transferencia escriba 'trans' y si quiere desloguarse escriba 'exit'\n".encode('utf-8'))
+            dec = conn.recv(1024).decode().strip()
+            while dec!= "trans" and dec!="exit" and dec is not None:
+                dec = conn.recv(1024).decode().strip()
+                print(dec)
+            if(dec == "trans"):
+                conn.sendall("Introduzca los siguientes datos para realizar la transferencia cuenta origen:\n".encode('utf-8'))
+                co = conn.recv(1024).decode() 
+                conn.sendall("Cuenta destino:\n".encode('utf-8'))
+                cd = conn.recv(1024).decode() 
+                conn.sendall("Cantidad transferida:\n".encode('utf-8'))
+                ct = conn.recv(1024).decode() 
+                cur.execute(f"INSERT INTO transfers (origin,destination,amount) VALUES ({co},{cd},{ct});")
+                conn.sendall(f"Transfiriendo {ct} desde {co} a {cd}\n".encode('utf-8')) # !
+                conn_pg.commit()
+                #cerramos conexión o damos opción de nuevo a hacer otra transferencia o logout??
+            elif (dec == "exit"):
+                conn.send("Hasta luego".encode('utf-8'))
+                # cur.close()
+                # s.close()
+            else:
+                conn.send("Si quiere hacer una transferencia escriba 'trans' y si quiere desloguarse escriba 'exit'\n".encode('utf-8'))
+
 
             # Close comms with db
             cur.close()

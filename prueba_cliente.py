@@ -10,7 +10,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     while True:
         data = s.recv(1024)
         if data:
-            print('Received', repr(data))
+            print('Received', data.decode())
             message_sent = input()
             try:
                 s.sendall(message_sent.encode())
