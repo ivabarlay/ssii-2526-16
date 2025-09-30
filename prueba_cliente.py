@@ -1,15 +1,22 @@
 import socket 
+import sys, errno
 
 HOST = 'localhost'
 PORT_HOST = 8000
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT_HOST))
-    s.sendall(input('Input: \n').encode())
+    # s.sendall(input('Input: \n').encode())
     while True:
         data = s.recv(1024)
         if data:
             print('Received', repr(data))
+            message_sent = input()
+            try:
+                s.sendall(message_sent.encode())
+            except IOError as e:
+                if e.errno == errno.EPIPE:
+                    pass
 
 # mi_socket.connect(('localhost',8000))
 # mi_socket = socket.socket()

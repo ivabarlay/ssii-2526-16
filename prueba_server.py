@@ -12,7 +12,7 @@ while True:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((HOST, PORT_HOST))
-        s.listen(1)
+        s.listen(5)
         conn, addr = s.accept()
         with conn:
             print('Connected by', addr)
@@ -27,49 +27,45 @@ while True:
             cur = conn_pg.cursor()
 
             conn.sendall("Bienvenido al sistema en linea para transferencias del Banco Popular, introduzca su usuario y contrasena".encode('utf-8'))
-            data = conn.recv(1024).decode()
-
-            user_data = None
+            user_name = conn.recv(1024).decode()
             try:
-                cur.execute("SELECT * FROM users WHERE username = (%s);", (data,))
-                user_data = cur.fetchone()
+                user_data_query = None
+                cur.execute("SELECT * FROM users WHERE username = (%s);", (user_name,))
+                user_data_query = cur.fetchone()
+                print(user_data_query)
 
             except psycopg2.errors.UndefinedColumn as e:
                 conn.sendall("Nombre de usuario invalido".encode('utf-8'))
 
-            if user_data is None:
-                conn.sendall("Usuario no encontrado, registrese introduciendo una contraseña\n".encode('utf-8'))
+            if user_data_query is None:
+                conn.sendall("Usuario no encontrado, registrese introduciendo una contrasena: \n".encode('utf-8'))
+                passw = conn.recv(1024).decode()
+                cur.execute("INSERT INTO users (username, password) VALUES (%s,%s);", (user_name,passw))
+                conn_pg.commit()
+
             else:
-                conn.sendall(f"Usuario encontrado: {user_data}\n".encode('utf-8'))
+                conn.send(f"Usuario encontrado: {user_data_query}\n".encode('utf-8'))
+                conn.sendall("Introduzca su contraseña: ".encode('utf-8'))
+                passw = conn.recv(1024).decode()
+
+            conn.send(f"Bienvenido al sistema {user_name}\n".encode('utf-8'))
+            conn.send("Si quiere hacer una transferencia escriba 'trans' y si quiere desloguarse escriba 'exit'\n".encode('utf-8'))
+
             # Close comms with db
             cur.close()
             conn_pg.close()
         s.close()
 
-    #     if (len(l) == 0):
-    #         conexion.sendall("Usuario no encontrado, registrese introduciendo una contraseña\n".encode('utf-8'))
-    #         # passw = input('Contraseña: ')
-    #         passw = conexion.recv(1024).decode()
-    #         cur.execute(f"INSERT INTO users (username,password) VALUES ('{user}','{passw}');") 
-    #         conn.commit()
-    #     else:
-    #         conexion.sendall("Introduzca su contraseña: ".encode('utf-8'))
-    #         passw = conexion.recv(1024).decode()
-    #         #passw = input()
-    #
-    #     conexion.send(f"Bienvenido al sistema {user}\n".encode('utf-8'))
-    #     conexion.send("Si quiere hacer una transferencia escriba 'trans' y si quiere desloguarse escriba 'exit'\n".encode('utf-8'))
-    #
-    #     dec = conexion.recv(1024).decode().strip()
+    #     dec = conn.recv(1024).decode().strip()
     #     while dec!= "trans" and dec!="exit" and dec is not None:
     #         print(dec)
     #         print("oal")
-    #         dec = conexion.recv(1024).decode().strip()
+    #         dec = conn.recv(1024).decode().strip()
     #         print(dec)
     #         #dec = input()
     #     if(dec == "trans"):
-    #         conexion.send("Introduzca los siguientes datos para realizar la transferencia".encode('utf-8'))
-    #         peticion2 = conexion.recv(1024).decode() #recibe todo lo que envia el cliente
+    #         conn.send("Introduzca los siguientes datos para realizar la transferencia".encode('utf-8'))
+    #         peticion2 = conn.recv(1024).decode() #recibe todo lo que envia el cliente
     #         if not peticion2:
     #             break
     #         co , cd, ct = peticion2.split(",")
@@ -77,17 +73,17 @@ while True:
     #         # cd = input("Cuenta Destino: ")
     #         # ct = input("Cantidad Transferida: ")
     #         cur.execute(f"INSERT INTO transfers (origin,destination,amount) VALUES ({co},{cd},{ct});")
-    #         conexion.send(f"Transfiriendo {ct} desde {co} a {cd} ".encode('utf-8'))
+    #         conn.send(f"Transfiriendo {ct} desde {co} a {cd} ".encode('utf-8'))
     #         conn.commit()
     #     elif (dec == "exit"):
-    #         conexion.send("Hasta luego".encode('utf-8'))
+    #         conn.send("Hasta luego".encode('utf-8'))
     #         conn.close()
     #         cur.close()
     #         s.close()
     #     else:
-    #         conexion.send("Si quiere hacer una transferencia escriba 'trans' y si quiere desloguarse escriba 'exit'\n".encode('utf-8'))
+    #         conn.send("Si quiere hacer una transferencia escriba 'trans' y si quiere desloguarse escriba 'exit'\n".encode('utf-8'))
 
-        # peticion2 = conexion.recv(1024).decode() #recibe todo lo que envia el cliente
+        # peticion2 = conn.recv(1024).decode() #recibe todo lo que envia el cliente
         # if not peticion2:
         #     break
         # co , cd, ct = peticion2.split(",")
@@ -96,5 +92,5 @@ while True:
         # print(co,cd, ct)
 
         #print(peticion)
-        #conexion.send("Oal benbenio al servidoh".encode())# el buffer no interpreta string a palo seco, hay que codificarla
-        #conexion.close()
+        #conn.send("Oal benbenio al servidoh".encode())# el buffer no interpreta string a palo seco, hay que codificarla
+        #conn.close()
