@@ -28,8 +28,8 @@ conn.close()
 new_conn = get_connection(DB_NAME)
 new_cur = new_conn.cursor()
     
-new_cur.execute('CREATE TABLE IF NOT EXISTS users (username varchar (40) PRIMARY KEY, password varchar (128) NOT NULL);')
-new_cur.execute('CREATE TABLE IF NOT EXISTS transfers (origin varchar (24) NOT NULL, destination varchar (24) NOT NULL, amount int NOT NULL, PRIMARY KEY (origin,destination) );')
+new_cur.execute('CREATE TABLE IF NOT EXISTS users (username varchar (12) PRIMARY KEY, password varchar (64) NOT NULL);')
+new_cur.execute('CREATE TABLE IF NOT EXISTS transfers (origin NUMERIC(24) NOT NULL, destination NUMERIC(24) NOT NULL, amount INT NOT NULL, PRIMARY KEY (origin,destination) );')
 
 try:
     new_cur.execute("INSERT INTO users (username,password) VALUES ('Paco','sha-256');") 
