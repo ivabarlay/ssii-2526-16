@@ -92,6 +92,12 @@ while True:
                     except:
                         conn.sendall(f"Datos erróneos en la cuenta origen o destino de la transferencia {co} ,{cd}\n".encode('utf-8'))
                         conn_pg.rollback()
+                    # try:
+                    #     cur.execute("INSERT INTO nonces (nonce) VALUES (%s);", (nonce))
+                    # except:
+                    #     conn.sendall(f"El NONCE coincide hacker de mierda\n".encode('utf-8'))
+                    #     conn_pg.rollback()
+                        
                 else:
                     conn.sendall(f"¡MAC inválido!\n Ha habido un problema con la integridad de la transferencia, contacte con el administrador\n".encode('utf-8'))
 
