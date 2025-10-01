@@ -2,6 +2,8 @@ import socket
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
+import hashlib
+
 HOST = ''
 PORT_HOST = 8000
 
@@ -40,12 +42,26 @@ while True:
             if user_data_query is None:
                 conn.sendall("Usuario no encontrado, registrese introduciendo una contrasena: \n".encode('utf-8'))
                 passw = conn.recv(1024).decode()
-                cur.execute("INSERT INTO users (username, password) VALUES (%s,%s);", (user_name,passw))
+                hashpw = hashlib.sha256(passw)
+                cur.execute("INSERT INTO users (username, password) VALUES (%s,%s);", (user_name,hashpw))
                 conn_pg.commit()
 
             else:
                 conn.sendall(f"Usuario encontrado: {user_data_query}\n Introduzca su contraseña: \n".encode('utf-8'))
+                print(user_data_query[1])
                 passw = conn.recv(1024).decode()
+                if(user_data_query[1] != passw):
+                    n = 0
+                    while n!=5:
+                        conn.sendall(f"Contraseña errónea, inténtelo de nuevo\n".encode('utf-8'))
+                        passw = conn.recv(1024).decode()
+                        n+=1
+                    if n==5:
+                        conn.sendall(f"Contraseña errónea.\n Ha superado el máximo número de intentos para introducir la contraseña...".encode('utf-8'))
+                        break
+                        # cur.close()
+                        # s.close()
+
 
             conn.sendall(f"Bienvenido al sistema {user_name}\n Si quiere hacer una transferencia escriba 'trans' y si quiere desloguarse escriba 'exit'\n".encode('utf-8'))
             dec = conn.recv(1024).decode().strip()
