@@ -42,15 +42,16 @@ while True:
             if user_data_query is None:
                 conn.sendall("Usuario no encontrado, registrese introduciendo una contrasena: \n".encode('utf-8'))
                 passw = conn.recv(1024).decode()
-                hashpw = hashlib.sha256(passw)
-                cur.execute("INSERT INTO users (username, password) VALUES (%s,%s);", (user_name,hashpw))
+                hashpw = hashlib.sha256(passw.encode())
+                print(hashpw.hexdigest())
+                cur.execute("INSERT INTO users (username, password) VALUES (%s,%s);", (user_name,hashpw.hexdigest()))
                 conn_pg.commit()
 
             else:
                 conn.sendall(f"Usuario encontrado: {user_data_query}\n Introduzca su contraseña: \n".encode('utf-8'))
                 print(user_data_query[1])
                 passw = conn.recv(1024).decode()
-                if(user_data_query[1] != passw):
+                if(user_data_query[1] != hashlib.sha256(passw.encode()).hexdigest()):
                     n = 0
                     while n!=5:
                         conn.sendall(f"Contraseña errónea, inténtelo de nuevo\n".encode('utf-8'))
