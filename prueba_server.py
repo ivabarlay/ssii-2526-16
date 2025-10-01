@@ -2,12 +2,12 @@ import socket
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
-import hashlib
-
-import hmac
+import hashlib, hmac, random
 
 HOST = ''
 PORT_HOST = 8000
+
+KEY = 'e179017a-62b0-4996-8a38-e91aa9f1'
 
 # mi_socket = socket.socket()
 # mi_socket.bind(('localhost',8000))
@@ -42,7 +42,7 @@ while True:
                 conn.sendall("Nombre de usuario invalido".encode('utf-8'))
 
             if user_data_query is None:
-                conn.sendall("Usuario no encontrado, registrese introduciendo una contrasena: \n".encode('utf-8'))
+                conn.sendall("Usuario no encontrado, registrese introduciendo una contraseña: \n".encode('utf-8'))
                 passw = conn.recv(1024).decode()
                 hashpw = hashlib.sha256(passw.encode())
                 print(hashpw.hexdigest())
@@ -72,24 +72,35 @@ while True:
                 dec = conn.recv(1024).decode().strip()
                 print(dec)
             if(dec == "trans"):
-                conn.sendall("Introduzca los siguientes datos para realizar la transferencia cuenta origen:\n".encode('utf-8'))
-                co = conn.recv(1024).decode() 
-                conn.sendall("Cuenta destino:\n".encode('utf-8'))
-                cd = conn.recv(1024).decode() 
-                conn.sendall("Cantidad transferida:\n".encode('utf-8'))
-                ct = conn.recv(1024).decode() 
-                try:
-                    cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);", (co, cd, ct))
-                except:
-                    conn.sendall(f"Datos erróneos en la cuenta origen o destino de la transacción {co} ,{cd}\n".encode('utf-8'))
-                    conn_pg.rollback()
-                conn.sendall(f"Transfiriendo {ct} desde {co} a {cd}\n".encode('utf-8')) # !
+                conn.sendall("Introduzca los siguientes datos para realizar la transferencia:".encode('utf-8'))
+                #print(conn.recv(1024).decode().split(','))
+                res =  conn.recv(1024).decode()
+                print(res)
+                co, cd, ct, mac_cliente, nonce = res.split(',')
+                print(co, cd, ct, mac_cliente, nonce)
+                # conn.sendall("Cuenta destino:\n".encode('utf-8'))
+                # cd = conn.recv(1024).decode() 
+                # conn.sendall("Cantidad transferida:\n".encode('utf-8'))
+                # ct = conn.recv(1024).decode()
+                # mac_cliente = conn.recv(1024).decode()
+                # nonce = conn.recv(1024).decode()
+                expected =  hmac.new(KEY.encode(), co.encode()+b","+cd.encode()+b","+ct.encode()+str(nonce).encode(), hashlib.sha256).digest() # El nonce va con el mensaje concatenado o aparte?
+                if (hmac.compare_digest(expected,bytes.fromhex(mac_cliente))):
+                    conn.sendall(f"No hubo problemas en la integridad de la transferencia :)\n Transfiriendo {ct} desde {co} a {cd}...\n".encode('utf-8'))
+                    try:
+                        cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);", (co, cd, ct))
+                    except:
+                        conn.sendall(f"Datos erróneos en la cuenta origen o destino de la transferencia {co} ,{cd}\n".encode('utf-8'))
+                        conn_pg.rollback()
+                else:
+                    conn.sendall(f"¡MAC inválido!\n Ha habido un problema con la integridad de la transferencia, contacte con el administrador\n".encode('utf-8'))
+
                 conn_pg.commit()
                 #cerramos conexión o damos opción de nuevo a hacer otra transferencia o logout??
             elif (dec == "exit"):
                 conn.send("Hasta luego".encode('utf-8'))
-                # cur.close()
-                # s.close()
+                cur.close()
+                s.close()
             else:
                 conn.send("Si quiere hacer una transferencia escriba 'trans' y si quiere desloguarse escriba 'exit'\n".encode('utf-8'))
 
