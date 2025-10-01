@@ -72,16 +72,20 @@ while True:
                 dec = conn.recv(1024).decode().strip()
                 print(dec)
             if(dec == "trans"):
-                conn.sendall("Introduzca los siguientes datos para realizar la transferencia:\n Cuenta origen:\n".encode('utf-8'))
-                co = conn.recv(1024).decode() 
-                conn.sendall("Cuenta destino:\n".encode('utf-8'))
-                cd = conn.recv(1024).decode() 
-                conn.sendall("Cantidad transferida:\n".encode('utf-8'))
-                ct = conn.recv(1024).decode()
-                mac_cliente = conn.recv(1024).decode()
-                nonce = conn.recv(1024).decode()
-                expected =  hmac.new(KEY, co.encode()+","+cd.encode()+","+ct.encode()+nonce, hashlib.sha256()).digest() # El nonce va con el mensaje concatenado o aparte?
-                if (hmac.compare_digest(expected,mac_cliente)):
+                conn.sendall("Introduzca los siguientes datos para realizar la transferencia:".encode('utf-8'))
+                #print(conn.recv(1024).decode().split(','))
+                res =  conn.recv(1024).decode()
+                print(res)
+                co, cd, ct, mac_cliente, nonce = res.split(',')
+                print(co, cd, ct, mac_cliente, nonce)
+                # conn.sendall("Cuenta destino:\n".encode('utf-8'))
+                # cd = conn.recv(1024).decode() 
+                # conn.sendall("Cantidad transferida:\n".encode('utf-8'))
+                # ct = conn.recv(1024).decode()
+                # mac_cliente = conn.recv(1024).decode()
+                # nonce = conn.recv(1024).decode()
+                expected =  hmac.new(KEY.encode(), co.encode()+b","+cd.encode()+b","+ct.encode()+str(nonce).encode(), hashlib.sha256).digest() # El nonce va con el mensaje concatenado o aparte?
+                if (hmac.compare_digest(expected,bytes.fromhex(mac_cliente))):
                     conn.sendall(f"No hubo problemas en la integridad de la transferencia :)\n Transfiriendo {ct} desde {co} a {cd}...\n".encode('utf-8'))
                     try:
                         cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);", (co, cd, ct))
@@ -95,8 +99,8 @@ while True:
                 #cerramos conexión o damos opción de nuevo a hacer otra transferencia o logout??
             elif (dec == "exit"):
                 conn.send("Hasta luego".encode('utf-8'))
-                # cur.close()
-                # s.close()
+                cur.close()
+                s.close()
             else:
                 conn.send("Si quiere hacer una transferencia escriba 'trans' y si quiere desloguarse escriba 'exit'\n".encode('utf-8'))
 
