@@ -32,11 +32,11 @@ new_cur.execute('CREATE TABLE IF NOT EXISTS users (username varchar (12) PRIMARY
 new_cur.execute('CREATE TABLE IF NOT EXISTS transfers (origin NUMERIC(24) NOT NULL, destination NUMERIC(24) NOT NULL, amount INT NOT NULL, PRIMARY KEY (origin,destination) );')
 
 try:
-    new_cur.execute("INSERT INTO users (username,password) VALUES ('Paco','sha-256');") 
-    new_cur.execute("INSERT INTO users (username,password) VALUES ('Antonio','sha-256');")
-    new_cur.execute("INSERT INTO users (username,password) VALUES ('José','sha-256');")
-    new_cur.execute("INSERT INTO users (username,password) VALUES ('María','sha-256');")
-    new_cur.execute("INSERT INTO users (username,password) VALUES ('Manuela','sha-256');")
+    new_cur.execute("INSERT INTO users (username,password) VALUES ('Paco','ec8be98b2788fe54f8e05151a6da59c732271d33de1bdaa63c53cd7a1188ceff');") 
+    new_cur.execute("INSERT INTO users (username,password) VALUES ('Antonio','9568075204fc58991050c4b10f8f98d2382a4c597f59c5bfdeb09d944d32896f');")
+    new_cur.execute("INSERT INTO users (username,password) VALUES ('José','f469cccc3a5add83ecfcccf4b3e2e95ce92fd2a4a8079ba13804eb8abb801978');")
+    new_cur.execute("INSERT INTO users (username,password) VALUES ('María','e4a44f08b39d76a4239bf7c1711c944a8276671649b124538284fbc688295933');")
+    new_cur.execute("INSERT INTO users (username,password) VALUES ('Manuela','5d2eaa084ab619d05c45d012375bbcc095a140df4c37df2033cb3cb15c0cff17');")
 except:
     new_conn.rollback() 
 
