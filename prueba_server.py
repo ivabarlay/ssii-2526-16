@@ -4,6 +4,8 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 import hashlib
 
+import hmac
+
 HOST = ''
 PORT_HOST = 8000
 
@@ -76,7 +78,11 @@ while True:
                 cd = conn.recv(1024).decode() 
                 conn.sendall("Cantidad transferida:\n".encode('utf-8'))
                 ct = conn.recv(1024).decode() 
-                cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);", (co, cd, ct))
+                try:
+                    cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);", (co, cd, ct))
+                except:
+                    conn.sendall(f"Datos erróneos en la cuenta origen o destino de la transacción {co} ,{cd}\n".encode('utf-8'))
+                    conn_pg.rollback()
                 conn.sendall(f"Transfiriendo {ct} desde {co} a {cd}\n".encode('utf-8')) # !
                 conn_pg.commit()
                 #cerramos conexión o damos opción de nuevo a hacer otra transferencia o logout??
