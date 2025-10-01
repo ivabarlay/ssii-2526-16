@@ -9,8 +9,6 @@ PORT_HOST = 8000
 
 KEY = 'e179017a-62b0-4996-8a38-e91aa9f1'
 
-nonce = random.randint(0,100)
-
 # mi_socket = socket.socket()
 # mi_socket.bind(('localhost',8000))
 # mi_socket.listen()
@@ -81,6 +79,7 @@ while True:
                 conn.sendall("Cantidad transferida:\n".encode('utf-8'))
                 ct = conn.recv(1024).decode()
                 mac_cliente = conn.recv(1024).decode()
+                nonce = conn.recv(1024).decode()
                 expected =  hmac.new(KEY, co.encode()+","+cd.encode()+","+ct.encode()+nonce, hashlib.sha256()).digest() # El nonce va con el mensaje concatenado o aparte?
                 if (hmac.compare_digest(expected,mac_cliente)):
                     conn.sendall(f"No hubo problemas en la integridad de la transferencia :)\n Transfiriendo {ct} desde {co} a {cd}...\n".encode('utf-8'))
