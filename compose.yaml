@@ -1,7 +1,6 @@
 # Use postgres/example user/password credentials
 
 services:
-
   db:
     ports:
       - 5432:5432
@@ -16,7 +15,9 @@ services:
     #    tmpfs:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
-      POSTGRES_PASSWORD: example
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_password
+    secrets:
+      - pg_password
 
   adminer:
     image: adminer
@@ -24,3 +25,6 @@ services:
     ports:
       - 8080:8080
 
+secrets:
+  pg_password:
+    file: ./secrets/pg_password.txt
