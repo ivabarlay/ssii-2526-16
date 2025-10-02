@@ -18,14 +18,16 @@ while True:
         s.bind((HOST, PORT_HOST))
         s.listen(5)
         conn, addr = s.accept()
+
+
         with conn:
             print('Connected by', addr)
+
+            pg_password = ""
+            with open("secrets/pg_password.txt", "r") as file:
+                pg_password = file.read()
             
-            # Connect to pg database
-            conn_pg = psycopg2.connect(dbname = "banco_popular",
-                                       user = "postgres",
-                                       password = "example",
-                                       host = "localhost")
+            conn_pg = psycopg2.connect(f"dbname=banco_popular user=postgres password={pg_password} host=localhost")
 
             # Open cursor to perform ops
             cur = conn_pg.cursor()

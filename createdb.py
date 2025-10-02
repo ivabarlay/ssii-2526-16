@@ -7,11 +7,15 @@ from psycopg2 import errors
 DB_NAME = "banco_popular"
 
 def get_connection(database):
-    return psycopg2.connect(database = database, 
-                        user = "postgres", 
-                        host= 'localhost',
-                        password = "example",
-                        port = 5432)
+    with open("secrets/pg_password.txt", "r") as file:
+        pg_password = file.read()
+    
+    return psycopg2.connect(f"dbname={database} user=postgres password={pg_password} host=localhost")
+    # return psycopg2.connect(database = database, 
+    #                     user = "postgres", 
+    #                     host= 'localhost',
+    #                     password = "example",
+    #                     port = 5432)
 
 try:
     conn = get_connection("postgres")
