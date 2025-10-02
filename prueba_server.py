@@ -78,6 +78,7 @@ while True:
                 print(res)
                 co, cd, ct, mac_cliente, nonce = res.split(',')
                 print(co, cd, ct, mac_cliente, nonce)
+                print(int(nonce))
                 # conn.sendall("Cuenta destino:\n".encode('utf-8'))
                 # cd = conn.recv(1024).decode() 
                 # conn.sendall("Cantidad transferida:\n".encode('utf-8'))
@@ -86,9 +87,11 @@ while True:
                 # nonce = conn.recv(1024).decode()
                 expected =  hmac.new(KEY.encode(), co.encode()+b","+cd.encode()+b","+ct.encode()+str(nonce).encode(), hashlib.sha256).digest() # El nonce va con el mensaje concatenado o aparte?
                 if (hmac.compare_digest(expected,bytes.fromhex(mac_cliente))):
-                    conn.sendall(f"No hubo problemas en la integridad de la transferencia :)\n Transfiriendo {ct} desde {co} a {cd}...\n".encode('utf-8'))
                     try:
+                        conn.sendall(f"No hubo problemas en la integridad de la transferencia :)\n Transfiriendo {ct} desde {co} a {cd}...\n".encode('utf-8'))
                         cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);", (co, cd, ct))
+                        print("->",nonce)
+                        cur.execute("INSERT INTO nonces (nonce) VALUES (%s);", (nonce))
                     except:
                         conn.sendall(f"Datos erróneos en la cuenta origen o destino de la transferencia {co} ,{cd}\n".encode('utf-8'))
                         conn_pg.rollback()
