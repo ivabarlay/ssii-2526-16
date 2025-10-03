@@ -17,29 +17,34 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         data = s.recv(1024)
         if data:
             print('Received', data.decode())
-            message_sent = input()
-            while message_sent == "":
-                message_sent = input()
-            if message_sent=="trans":
-                s.sendall(message_sent.encode())
-                data = s.recv(1024)
-                print('Received', data.decode())
-                co = input("Cuenta origen:\n")
-                cd = input("Cuenta destino:\n")
-                ct = input("Cantidad:\n")
-                mac_client = hmac.new(KEY.encode(), co.encode()+b","+cd.encode()+b","+ct.encode()+str(nonce).encode(), hashlib.sha256).digest()
-                transferencia = f"{co},{cd},{ct},{mac_client.hex()},{nonce}"
-                try:
-                    s.sendall(transferencia.encode())
-                except IOError as e:
-                    if e.errno == errno.EPIPE:
-                        pass
-            else:
-                try:
-                    s.sendall(message_sent.encode())
-                except IOError as e:
-                    if e.errno == errno.EPIPE:
-                        pass
+            data_splitted = data.decode().split(',')
+            mode = data_splitted[0]
+            message = data_splitted[1]
+            print(mode, message)
+
+            # message_sent = input()
+            # while message_sent == "":
+            #     message_sent = input()
+            # if message_sent=="trans":
+            #     s.sendall(message_sent.encode())
+            #     data = s.recv(1024)
+            #     print('Received', data.decode())
+            #     co = input("Cuenta origen:\n")
+            #     cd = input("Cuenta destino:\n")
+            #     ct = input("Cantidad:\n")
+            #     mac_client = hmac.new(KEY.encode(), co.encode()+b","+cd.encode()+b","+ct.encode()+str(nonce).encode(), hashlib.sha256).digest()
+            #     transferencia = f"{co},{cd},{ct},{mac_client.hex()},{nonce}"
+            #     try:
+            #         s.sendall(transferencia.encode())
+            #     except IOError as e:
+            #         if e.errno == errno.EPIPE:
+            #             pass
+            # else:
+            #     try:
+            #         s.sendall(message_sent.encode())
+            #     except IOError as e:
+            #         if e.errno == errno.EPIPE:
+            #             pass
         else:
             break
 
