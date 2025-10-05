@@ -38,5 +38,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 except IOError as e:
                     if e.errno == errno.EPIPE:
                         pass
+            # elif mode == "info":
+            #     print("ke")
+            #     message_sent = ""
+            #     s.sendall(message_sent.encode())
         else:
             break

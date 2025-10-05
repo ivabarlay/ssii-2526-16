@@ -1,4 +1,4 @@
-import socket 
+import socket
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
@@ -25,7 +25,7 @@ while True:
             pg_password = ""
             with open("secrets/pg_password.txt", "r") as file:
                 pg_password = file.read()
-            
+
             conn_pg = psycopg2.connect(f"dbname=banco_popular user=postgres password={pg_password} host=localhost")
 
             # Open cursor to perform ops
@@ -49,14 +49,17 @@ while True:
                 print(hashpw.hexdigest())
                 cur.execute("INSERT INTO users (username, password) VALUES (%s,%s);", (user_name,hashpw.hexdigest()))
                 conn_pg.commit()
-
+                # send_message(conn,'info',"Usuario registrado correctamente \n")
+                # print ("jj")
+                # empty = conn.recv(1024).decode()
+                # print("->",empty)
             else:
-                send_message(conn,'inp',f"Usuario encontrado: {user_data_query}\n Introduzca su contraseña: \n")
+                send_message(conn,'inp',f"Usuario ya registrado, {user_data_query}\n Introduzca su contraseña: \n")
                 print(user_data_query[1])
                 passw = conn.recv(1024).decode()
                 if(user_data_query[1] != hashlib.sha256(passw.encode()).hexdigest()):
                     n = 0
-                    while n!=5:
+                    while n!=5 and  user_data_query[1] != hashlib.sha256(passw.encode()).hexdigest():
                         send_message(conn,'inp',f"Contraseña errónea, inténtelo de nuevo\n")
                         passw = conn.recv(1024).decode()
                         n+=1
@@ -87,7 +90,7 @@ while True:
                     except:
                         send_message(conn,'inp',f"Datos erróneos en la cuenta origen o destino de la transferencia {co} ,{cd}\n")
                         conn_pg.rollback()
-                        
+
                 else:
                     send_message(conn,'inp',f"¡MAC inválido!\n Ha habido un problema con la integridad de la transferencia, contacte con el administrador\n")
 
