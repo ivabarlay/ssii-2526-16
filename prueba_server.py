@@ -80,6 +80,11 @@ while True:
                 print(co, cd, ct, mac_cliente, nonce)
                 print(int(nonce))
 
+                # m = list(mac_cliente)
+                # m[6] = "a"
+                # mac_cliente = "".join(m)
+                # print(mac_cliente) 
+
                 expected =  hmac.new(KEY.encode(), co.encode()+b","+cd.encode()+b","+ct.encode()+str(nonce).encode(), hashlib.sha256).digest() # El nonce va con el mensaje concatenado o aparte?
                 if (hmac.compare_digest(expected,bytes.fromhex(mac_cliente))):
                     try:
@@ -93,6 +98,9 @@ while True:
 
                 else:
                     send_message(conn,'inp',f"¡MAC inválido!\n Ha habido un problema con la integridad de la transferencia, contacte con el administrador\n")
+                    cur.close()
+                    s.close()
+                    break
 
                 conn_pg.commit()
             elif (dec == "exit"):
