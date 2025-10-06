@@ -8,8 +8,6 @@ PORT_HOST = 8000
 
 KEY = 'e179017a-62b0-4996-8a38-e91aa9f1'
 
-nonce = random.randint(0,100)
-
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT_HOST))
     while True:
@@ -26,6 +24,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     message_sent = input()
                 s.sendall(message_sent.encode())
             elif mode=="trans":
+                nonce = random.randint(0,100)
                 print('Received', data.decode())
                 co = input("Cuenta origen:\n")
                 print("ey")
