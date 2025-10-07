@@ -27,7 +27,7 @@ El directorio `secrets`, que se ignora en el control de versiones de `git` y deb
 <-Instrucciones para instalar el software necesario:
 - Es necesario tener instalado python3, docker y docker compose.
 - Instalar los paquetes en GNU/Linux, en una distribución similar a Debian: `$ sudo apt install python3 docker.io docker-compose`.
-- Seguir las instrucciones en la siguiente URL para configurar `Docker` según sea necesario: [link Text](https://docs.docker.com/engine/install/linux-postinstall/)
+- Seguir las instrucciones en la siguiente URL para configurar `Docker` según sea necesario: [Configurar Docker](https://docs.docker.com/engine/install/linux-postinstall/)
 
 ### Ejecución
 
