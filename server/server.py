@@ -7,7 +7,7 @@ import hashlib, hmac, random
 HOST = ''
 PORT_HOST = 8000
 
-with open("secrets/key.txt", "r") as file:
+with open("../secrets/key.txt", "r") as file:
         KEY = file.read()
 
 
@@ -26,7 +26,7 @@ while True:
             print('Connected by', addr)
 
             pg_password = ""
-            with open("secrets/pg_password.txt", "r") as file:
+            with open("../secrets/pg_password.txt", "r") as file:
                 pg_password = file.read()
 
             conn_pg = psycopg2.connect(f"dbname=banco_popular user=postgres password={pg_password} host=localhost")
