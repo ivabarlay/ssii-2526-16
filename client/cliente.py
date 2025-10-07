@@ -6,7 +6,7 @@ import hashlib, hmac, random
 HOST = 'localhost'
 PORT_HOST = 8000
 
-with open("secrets/key.txt", "r") as file:
+with open("../secrets/key.txt", "r") as file:
         KEY = file.read()
 
 
