@@ -13,7 +13,7 @@ with open("secrets/key.txt", "r") as file:
 
 
 def send_message(connection:socket.socket, mode: str, message: str):
-    connection.sendall((mode+","+message).encode('utf-8'))
+    connection.sendall((mode+";"+message).encode('utf-8'))
 
 while True:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -57,7 +57,7 @@ while True:
                 # empty = conn.recv(1024).decode()
                 # print("->",empty)
             else:
-                send_message(conn,'inp',f"Usuario ya registrado, {user_data_query}\n Introduzca su contraseña: \n")
+                send_message(conn,'inp',f"Usuario ya registrado, {user_data_query[0]}\n Introduzca su contraseña: \n")
                 print(user_data_query[1])
                 passw = conn.recv(1024).decode()
                 if(user_data_query[1] != hashlib.sha256(passw.encode()).hexdigest()):

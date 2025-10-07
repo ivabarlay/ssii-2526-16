@@ -16,11 +16,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     while True:
         data = s.recv(1024)
         if data:
-            print('Received', data.decode())
-            data_splitted = data.decode().split(',')
+            #print('Received', data.decode())
+            #print(data.decode())
+            data_splitted = data.decode().split(';')
             mode = data_splitted[0]
             message = data_splitted[1]
-            print(mode, message)
+            #print(mode, message)
+            print(message)
             if mode == 'inp':
                 message_sent = input()
                 while message_sent == "":
@@ -28,9 +30,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.sendall(message_sent.encode())
             elif mode=="trans":
                 nonce = random.randint(0,100)
-                print('Received', data.decode())
+                #print('Received', data.decode())
+                #print(data.decode())
                 co = input("Cuenta origen:\n")
-                print("ey")
                 cd = input("Cuenta destino:\n")
                 ct = input("Cantidad:\n")
                 mac_client = hmac.new(KEY.encode(), co.encode()+b","+cd.encode()+b","+ct.encode()+str(nonce).encode(), hashlib.sha256).digest()
