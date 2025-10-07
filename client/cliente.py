@@ -3,6 +3,8 @@ import sys, errno
 
 import hashlib, hmac, random
 
+import uuid
+
 HOST = 'localhost'
 PORT_HOST = 8000
 
@@ -29,7 +31,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     message_sent = input()
                 s.sendall(message_sent.encode())
             elif mode=="trans":
-                nonce = random.randint(0,100)
+                nonce = str(uuid.uuid4().hex)
                 #print('Received', data.decode())
                 #print(data.decode())
                 co = input("Cuenta origen:\n")
