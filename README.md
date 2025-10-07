@@ -2,16 +2,16 @@
 
 ## Partes
 
-El trabajo está dividido en dos: cliente y servidor.
+El trabajo está dividido en dos partes: cliente y servidor.
 
-Los directorios `server` y `client` contienen el código perteneciente al servidor y al cliente, respectivamente
+Los directorios `server` y `client` contienen el código perteneciente al servidor y al cliente, respectivamente.
 El directorio `secrets`, que se ignora en el control de versiones de `git` y debe ser creado manualmente, almacena contraseñas y datos secretos para el sistema.
 
 ## Cliente
 
 ### Instalación de software
 <-Instrucciones para instalar el software necesario:
-- Es necesario tener instalado python3.
+- Es necesario tener instalado `python3`.
 - Instalar los paquetes en GNU/Linux, en una distribución similar a Debian:
 - Ejecutar `$ sudo apt install python3`.
 
