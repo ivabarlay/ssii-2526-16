@@ -94,6 +94,7 @@ while True:
                         send_message(conn,'log',f"No hubo problemas en la integridad de la transferencia :)\n Transfiriendo {ct} desde {co} a {cd}...\n")
                         cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);", (co, cd, ct))
                         print("->",nonce)
+                        print(len(nonce))
                         cur.execute("INSERT INTO nonces (nonce) VALUES (%s);", (nonce,))
                     except:
                         send_message(conn,'inp',f"Datos erróneos en la cuenta origen o destino de la transferencia {co} ,{cd}\n")
