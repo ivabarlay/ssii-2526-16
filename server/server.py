@@ -81,7 +81,7 @@ while True:
                 print(res)
                 co, cd, ct, mac_cliente, nonce = res.split(',')
                 print(co, cd, ct, mac_cliente, nonce)
-                print(int(nonce))
+                print(nonce)
 
                 # m = list(mac_cliente)
                 # m[6] = "a"

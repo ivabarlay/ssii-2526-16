@@ -27,4 +27,4 @@ services:
 
 secrets:
   pg_password:
-    file: ./secrets/pg_password.txt
+    file: ../secrets/pg_password.txt

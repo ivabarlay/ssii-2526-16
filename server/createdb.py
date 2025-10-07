@@ -34,7 +34,7 @@ new_cur = new_conn.cursor()
     
 new_cur.execute('CREATE TABLE IF NOT EXISTS users (username varchar(12) PRIMARY KEY, password varchar(64) NOT NULL);')
 new_cur.execute('CREATE TABLE IF NOT EXISTS transfers (origin character(24) NOT NULL, destination character(24) NOT NULL, amount INT NOT NULL, PRIMARY KEY (origin,destination) );')
-new_cur.execute('CREATE TABLE IF NOT EXISTS nonces (nonce INT PRIMARY KEY);')
+new_cur.execute('CREATE TABLE IF NOT EXISTS nonces (nonce varchar(16) PRIMARY KEY);')
 new_conn.commit()
 
 try:
