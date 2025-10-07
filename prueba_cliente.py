@@ -9,7 +9,7 @@ PORT_HOST = 8000
 with open("secrets/key.txt", "r") as file:
         KEY = file.read()
 
-# KEY = 'e179017a-62b0-4996-8a38-e91aa9f1'
+
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT_HOST))

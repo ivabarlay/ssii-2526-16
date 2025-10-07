@@ -10,7 +10,7 @@ PORT_HOST = 8000
 with open("secrets/key.txt", "r") as file:
         KEY = file.read()
 
-# KEY = 'e179017a-62b0-4996-8a38-e91aa9f1'
+
 
 def send_message(connection:socket.socket, mode: str, message: str):
     connection.sendall((mode+","+message).encode('utf-8'))
