@@ -1,4 +1,4 @@
-import socket
+import socket, ssl
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
@@ -7,16 +7,22 @@ import hashlib, hmac, random
 HOST = ''
 PORT_HOST = 8000
 
+certfile = '../secrets/server.crt'  # Ruta al archivo del certificado SSL
+keyfile = '../secrets/server.key'    # Ruta al archivo de la clave privada
+
 with open("../secrets/key.txt", "r") as file:
         KEY = file.read()
-
-
 
 def send_message(connection:socket.socket, mode: str, message: str):
     connection.sendall((mode+";"+message).encode('utf-8'))
 
+# Crear y envolver el socket con SSL
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ssl_context.load_cert_chain(certfile=certfile, keyfile=keyfile)
+
 while True:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    with ssl_context.wrap_socket(server_socket, server_side=True) as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((HOST, PORT_HOST))
         s.listen(5)

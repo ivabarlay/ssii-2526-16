@@ -1,4 +1,4 @@
-import socket 
+import socket, ssl
 import sys, errno
 
 import hashlib, hmac, random
@@ -11,9 +11,14 @@ PORT_HOST = 8000
 with open("../secrets/key.txt", "r") as file:
         KEY = file.read()
 
+# Crear y envolver el socket con SSL
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+ssl_context.check_hostname = False  # No verifica el nombre del host
+ssl_context.verify_mode = ssl.CERT_NONE  # No verifica el certificado del servidor (solo para pruebas)
 
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+with ssl_context.wrap_socket(client_socket, server_hostname=HOST) as s:
     s.connect((HOST, PORT_HOST))
     while True:
         data = s.recv(1024)
