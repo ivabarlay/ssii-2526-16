@@ -32,8 +32,8 @@ conn.close()
 new_conn = get_connection(DB_NAME)
 new_cur = new_conn.cursor()
     
-new_cur.execute('CREATE TABLE IF NOT EXISTS users (username varchar(12) PRIMARY KEY, password varchar(64) NOT NULL);')
-new_cur.execute('CREATE TABLE IF NOT EXISTS transfers (origin character(24) NOT NULL, destination character(24) NOT NULL, amount INT NOT NULL, PRIMARY KEY (origin,destination) );')
+new_cur.execute('CREATE TABLE IF NOT EXISTS users (username varchar(12) PRIMARY KEY, password varchar(64) NOT NULL, messages_sent INT NOT NULL);')
+# new_cur.execute('CREATE TABLE IF NOT EXISTS messages (destination varchar(12) NOT NULL, content character(24) NOT NULL);')
 new_cur.execute('CREATE TABLE IF NOT EXISTS nonces (nonce varchar(32) PRIMARY KEY);')
 new_conn.commit()
 

@@ -40,7 +40,7 @@ while True:
             # Open cursor to perform ops
             cur = conn_pg.cursor()
 
-            send_message(conn, "inp", "Bienvenido al sistema en linea para transferencias del Banco Popular, introduzca su usuario y contraseña")
+            send_message(conn, "inp", "Bienvenido al sistema en linea para mensajería de la Universidad de Sevilla, introduzca su usuario y contraseña")
             user_name = conn.recv(1024).decode()
             try:
                 user_data_query = None
@@ -76,38 +76,57 @@ while True:
                         send_message(conn,'log',f"Contraseña errónea.\n Ha superado el máximo número de intentos para introducir la contraseña...")
                         break
 
-            send_message(conn,'inp',f"Bienvenido al sistema {user_name}\n Si quiere hacer una transferencia escriba 'trans' y si quiere desloguarse escriba 'exit'\n")
+            send_message(conn,'inp',f"Bienvenido al sistema {user_name}\n Si quiere ecribir un mensaje escriba 'msg' y si quiere desloguarse escriba 'exit'\n")
             dec = conn.recv(1024).decode().strip()
-            while dec!= "trans" and dec!="exit" and dec is not None:
+            while dec!= "msg" and dec!="exit" and dec is not None:
                 dec = conn.recv(1024).decode().strip()
                 print(dec)
-            if(dec == "trans"):
-                send_message(conn,'trans',"Introduzca los siguientes datos para realizar la transferencia:")
+            if(dec == "msg"):
+                send_message(conn,'dest',"Introduzca el destinatario del mensaje:")
+                dest =  conn.recv(1024).decode()
+                try:
+                        user_data_query = None
+                        cur.execute("SELECT * FROM users WHERE username = (%s);", (dest,))
+                        user_data_query = cur.fetchone()
+                        print(user_data_query)
+
+                except psycopg2.errors.UndefinedColumn as e:
+                        send_message(conn,'inp',"El usuario destino no existe, vuelva a introducirlo")
+
+                while user_data_query == None:
+                    send_message(conn,'inp',"El usuario destino no existe, vuelva a introducirlo")
+                    dest =  conn.recv(1024).decode()
+                    try:
+                        user_data_query = None
+                        cur.execute("SELECT * FROM users WHERE username = (%s);", (dest,))
+                        user_data_query = cur.fetchone()
+                        print(user_data_query)
+
+                    except psycopg2.errors.UndefinedColumn as e:
+                        send_message(conn,'inp',"El usuario destino no existe, vuelva a introducirlo")
+                
+                print(dest)
+                send_message(conn,'mss',"Introduzca el mensaje:")
                 res =  conn.recv(1024).decode()
-                print(res)
-                co, cd, ct, mac_cliente, nonce = res.split(',')
-                print(co, cd, ct, mac_cliente, nonce)
-                print(nonce)
 
-                # m = list(mac_cliente)
-                # m[6] = "a"
-                # mac_cliente = "".join(m)
-                # print(mac_cliente) 
+                ms,mac_cliente = res.split(';')
+                print(ms,mac_cliente)
 
-                expected =  hmac.new(KEY.encode(), co.encode()+b","+cd.encode()+b","+ct.encode()+str(nonce).encode(), hashlib.sha256).digest() # El nonce va con el mensaje concatenado o aparte?
+                expected =  hmac.new(KEY.encode(), dest.encode()+b","+ms.encode(), hashlib.sha256).digest() # El nonce va con el mensaje concatenado o aparte?
+                print(expected)
                 if (hmac.compare_digest(expected,bytes.fromhex(mac_cliente))):
                     try:
-                        send_message(conn,'log',f"No hubo problemas en la integridad de la transferencia :)\n Transfiriendo {ct} desde {co} a {cd}...\n")
-                        cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);", (co, cd, ct))
-                        print("->",nonce)
-                        print(len(nonce))
-                        cur.execute("INSERT INTO nonces (nonce) VALUES (%s);", (nonce,))
+                        send_message(conn,'log',f"No hubo problemas en la integridad del mensaje :)\n Enviando mensaje a {dest} \n")
+                        #cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);", (co, cd, ct))
+                        # print("->",nonce)
+                        # print(len(nonce))
+                        # cur.execute("INSERT INTO nonces (nonce) VALUES (%s);", (nonce,))
                     except:
-                        send_message(conn,'inp',f"Datos erróneos en la cuenta origen o destino de la transferencia {co} ,{cd}\n")
+                        send_message(conn,'inp',f"Datos erróneos en \n")
                         conn_pg.rollback()
 
                 else:
-                    send_message(conn,'inp',f"¡MAC inválido!\n Ha habido un problema con la integridad de la transferencia, contacte con el administrador\n")
+                    send_message(conn,'inp',f"¡MAC inválido!\n Ha habido un problema con la integridad del mensaje, contacte con el administrador\n")
                     cur.close()
                     s.close()
                     break
@@ -119,7 +138,7 @@ while True:
                 s.close()
                 break
             else:
-                send_message(conn,'inp',"Si quiere hacer una transferencia escriba 'trans' y si quiere desloguarse escriba 'exit'\n")
+                send_message(conn,'inp',"Si quiere ecribir un mensaje escriba 'msg' y si quiere desloguarse escriba 'exit'\n")
 
             # Close comms with db
             cur.close()
