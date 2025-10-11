@@ -56,7 +56,7 @@ while True:
                 passw = conn.recv(1024).decode()
                 hashpw = hashlib.sha256(passw.encode())
                 print(hashpw.hexdigest())
-                cur.execute("INSERT INTO users (username, password) VALUES (%s,%s);", (user_name,hashpw.hexdigest()))
+                cur.execute("INSERT INTO users (username, password,messages_sent) VALUES (%s,%s,0);", (user_name,hashpw.hexdigest()))
                 conn_pg.commit()
                 # send_message(conn,'info',"Usuario registrado correctamente \n")
                 # print ("jj")
@@ -117,6 +117,7 @@ while True:
                 if (hmac.compare_digest(expected,bytes.fromhex(mac_cliente))):
                     try:
                         send_message(conn,'log',f"No hubo problemas en la integridad del mensaje :)\n Enviando mensaje a {dest} \n")
+                        cur.execute("UPDATE users SET messages_sent = messages_sent + 1 WHERE username = %s;", (user_name))
                         #cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);", (co, cd, ct))
                         # print("->",nonce)
                         # print(len(nonce))
