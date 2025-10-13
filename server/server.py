@@ -17,12 +17,13 @@ def send_message(connection:socket.socket, mode: str, message: str):
     connection.sendall((mode+";"+message).encode('utf-8'))
 
 # Crear y envolver el socket con SSL
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 ssl_context.load_cert_chain(certfile=certfile, keyfile=keyfile)
 
 while True:
-    with ssl_context.wrap_socket(server_socket, server_side=True) as s:
+    with ssl_context.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+, server_side=True) as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((HOST, PORT_HOST))
         s.listen(5)
@@ -117,7 +118,7 @@ while True:
                 if (hmac.compare_digest(expected,bytes.fromhex(mac_cliente))):
                     try:
                         send_message(conn,'log',f"No hubo problemas en la integridad del mensaje :)\n Enviando mensaje a {dest} \n")
-                        cur.execute("UPDATE users SET messages_sent = messages_sent + 1 WHERE username = %s;", (user_name))
+                        cur.execute("UPDATE users SET messages_sent = messages_sent + 1 WHERE username = %s;", (user_name,))
                         #cur.execute("INSERT INTO transfers (origin,destination,amount) VALUES (%s,%s,%s);", (co, cd, ct))
                         # print("->",nonce)
                         # print(len(nonce))
