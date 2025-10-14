@@ -11,7 +11,7 @@ PORT_HOST = 8000
 with open("../secrets/key.txt", "r") as file:
         KEY = file.read()
 
-# Crear y envolver el socket con SSL
+# Crear y envolver el socket con SSL xd
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 ssl_context.check_hostname = False  # No verifica el nombre del host
