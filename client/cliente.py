@@ -11,14 +11,24 @@ PORT_HOST = 8000
 with open("../secrets/key.txt", "r") as file:
         KEY = file.read()
 
+#Establecimiento de cipher suites
+context = ssl.create_default_context()
+
+cipher = 'DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:ECDHE-ECDSA-AES128-GCM-SHA256'
+context.set_ciphers(cipher)
+context.get_ciphers()
+
 # Crear y envolver el socket con SSL xd
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-ssl_context.check_hostname = False  # No verifica el nombre del host
-ssl_context.verify_mode = ssl.CERT_NONE  # No verifica el certificado del servidor (solo para pruebas)
+#ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+# ssl_context.check_hostname = False  # No verifica el nombre del host
+# ssl_context.verify_mode = ssl.CERT_NONE  # No verifica el certificado del servidor (solo para pruebas)
+
+context.check_hostname = False  # No verifica el nombre del host
+context.verify_mode = ssl.CERT_NONE  # No verifica el certificado del servidor (solo para pruebas)
 
 
-with ssl_context.wrap_socket(client_socket, server_hostname=HOST) as s:
+with context.wrap_socket(client_socket, server_hostname=HOST) as s:
     s.connect((HOST, PORT_HOST))
     while True:
         data = s.recv(1024)
