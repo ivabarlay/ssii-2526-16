@@ -143,8 +143,10 @@ def handle_client(c):
 
 context = ssl.create_default_context()
 
-cipher = 'DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:ECDHE-ECDSA-AES128-GCM-SHA256'
-context.set_ciphers(cipher)
+# cipher = 'DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:ECDHE-ECDSA-AES128-GCM-SHA256'
+# context.set_ciphers(cipher)
+
+context.minimum_version = ssl.TLSVersion.TLSv1_3
 
 
 # Crear y envolver el socket con SSL
