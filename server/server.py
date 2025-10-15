@@ -19,6 +19,7 @@ with open("../secrets/key.txt", "r") as file:
 def send_message(connection:socket.socket, mode: str, message: str):
     connection.sendall((mode+";"+message).encode('utf-8'))
 
+
 def handle_client(c):
     with c:
         print('Connected by', addr)
@@ -136,6 +137,14 @@ def handle_client(c):
         # Close comms with db
         cur.close()
         conn_pg.close()
+
+
+#Establecimiento de cipher suites
+
+# context = ssl.create_default_context()
+
+# cipher = 'DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:ECDHE-ECDSA-AES128-GCM-SHA256'
+# context.set_ciphers(cipher)
 
 
 # Crear y envolver el socket con SSL
