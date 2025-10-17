@@ -24,11 +24,7 @@ def handle_client(c):
     with c:
         print('Connected by', addr)
 
-        pg_password = ""
-        with open("../secrets/pg_password.txt", "r") as file:
-            pg_password = file.read()
 
-        conn_pg = psycopg2.connect(f"dbname=banco_popular user=postgres password={pg_password} host=localhost")
 
         # Open cursor to perform ops
         cur = conn_pg.cursor()
@@ -136,7 +132,6 @@ def handle_client(c):
 
         # Close comms with db
         cur.close()
-        conn_pg.close()
 
 
 #Establecimiento de cipher suites
@@ -157,12 +152,19 @@ context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 context.load_cert_chain(certfile=certfile, keyfile=keyfile)
 
 with context.wrap_socket(server_socket, server_side=True) as s:
+    pg_password = ""
+    with open("../secrets/pg_password.txt", "r") as file:
+        pg_password = file.read()
+    conn_pg = psycopg2.connect(f"dbname=banco_popular user=postgres password={pg_password} host=localhost")
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((HOST, PORT_HOST))
     s.listen()
 
-    while True:
-            conn, addr = s.accept()
-            start_new_thread(handle_client, (conn,))
-            # s.close()
+
+    with conn_pg:
+        while True:
+                conn, addr = s.accept()
+                start_new_thread(handle_client, (conn,))
+                # s.close()
+
 
