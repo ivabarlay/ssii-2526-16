@@ -159,7 +159,7 @@ context.load_cert_chain(certfile=certfile, keyfile=keyfile)
 with context.wrap_socket(server_socket, server_side=True) as s:
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((HOST, PORT_HOST))
-    s.listen(300)
+    s.listen()
 
     while True:
             conn, addr = s.accept()
